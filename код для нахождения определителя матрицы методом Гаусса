@@ -1,0 +1,65 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+double gauss(double** mat, int n){
+    double det = 1.0;
+    int sign = 1;
+    
+    for (int i=0; i<n; i++){
+        int max_line = i;
+        double max_el = fabs(mat[i][i]);
+        
+        for (int j = i+1; j<n; j++){
+            if (fabs(mat[j][i]) > max_el){
+                max_el = fabs(mat[j][i]);
+                max_line = j;
+            }
+        }
+        if (max_el < 1e-10)
+            return 0.0;
+
+        if (max_line != i){
+            double* swap_line = mat[i];
+            mat[i] = mat[max_line];
+            mat[max_line] = swap_line;
+            sign = -sign;
+        }
+        det =det*mat[i][i];
+        
+        for (int j = i+1; j<n; j++){
+            double k = mat[j][i] / mat[i][i];
+            for (int h=i; h<n; h++){
+                mat[j][h] -= k * mat[i][h];
+            }
+        }
+    }
+    
+    det =det*sign;
+    return det;
+}
+
+int main(void) {
+    int n;
+    scanf("%d", &n);
+    
+    double** mat = (double**)malloc(n*sizeof(double*));
+    for (int i=0; i<n; i++){
+        mat[i] = (double*)malloc(n*sizeof(double));
+    }
+    
+    for (int i=0; i<n; i++){
+        for (int j=0; j<n; j++){
+            scanf("%lf", &mat[i][j]);
+        }
+    }
+    double det = gauss(mat, n);
+    
+    printf("%lf", det);
+    
+    for (int i=0; i<n; i++){
+        free(mat[i]);
+    }
+    free(mat);
+    return 0;
+}
